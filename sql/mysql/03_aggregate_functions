@@ -1,0 +1,34 @@
+/* Multi row functions --------- # Aggreagate function #
+They accept multiple rows as input but the output is one single value */
+-- count, average, sum, min, max --
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+use salesdb;
+-- Basic aggregate functions
+select 
+customerid,
+count(*) total_orders,
+sum(sales) total_sales,
+avg(sales) average_sales,
+max(sales) highest_sales,
+min(sales) lowest_sales
+from orders
+group by customerid;
+-- 2. analysing the scores in table customers
+select 
+firstname,
+count(*) score,
+sum(score) total_score,
+avg(score) average_score,
+max(score) highest_score,
+min(score) lowest_score
+from customers
+group by firstname;
+-- 3. total sales for each product
+select
+productid,
+sum(sales) total_sales
+from orders
+group by productid;
+-- The numbeer of rows in the output is defined by the dimension (productid)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
