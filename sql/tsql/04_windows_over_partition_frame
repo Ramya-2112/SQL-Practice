@@ -1,0 +1,130 @@
+ -- Window Functions
+ -- Window functions are also known as analytical functions they are very important function in sql
+ /*====== window vs group by=======
+ windows perform calculations on a specific subsett of data, without losing the level of details of rows
+ =========== All columns in select must be included in group by ================ 
+     Contents:
+     1.OVER Clause
+     2.PARTITION Clause
+     3.ORDER Clause
+     4.FRAME Clause
+     5.Window with GROUP BY
+ ==============================================================================================================================*/
+ -- ====== Over clause ========
+ -- 1. Find the total sales across all orders, additionally providing details such as OrderID and OrderDate 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    Sales,
+    SUM(Sales) OVER () AS Total_Sales
+FROM Sales.Orders;
+-------------------------------------------------------------------------------------------------------------------------------
+-- ======= partition clause ========
+-- divides the dataset into windows
+-- 2.total sales across all orders and for each product, additionally providing details such as OrderID and OrderDate
+select
+    productid,
+    orderid,
+    orderdate,
+sum(sales)over(partition by productid) as total_sales
+from sales.orders
+/* 3.Find the total sales across all orders, for each product,and for each combination of product and order status,
+   additionally providing details such as OrderID and OrderDate */
+   select
+    productid,
+    orderid,
+    orderstatus,
+    sales,
+    orderdate,
+SUM(Sales) OVER () AS Total_Sales,
+sum(sales)over(partition by productid) as total_sales_by_product,
+sum(sales)over(partition by productid,orderstatus) as total_sales_by_product_and_orderstatus
+from sales.orders
+-------------------------------------------------------------------------------------------------------------------------------
+-- ====== over clause =========
+-- sort your data within a window (asc & desc)
+-- 4.Rank each order by Sales from highest to lowest
+select
+    orderid,
+    customerid,
+    orderdate,
+    sales,
+rank() over(order by sales desc) ranked_sales
+from sales.orders;
+----------------------------------------------------------------------------------------------------------------------------------
+-- FRAME CLAUSE
+-- 5. Calculate Total Sales by Order Status for current and next two orders 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    OrderStatus,
+    Sales,
+    SUM(Sales) OVER (
+        PARTITION BY OrderStatus 
+        ORDER BY OrderDate 
+        ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING
+    ) AS Total_Sales
+FROM Sales.Orders;
+
+ -- 6. Calculate Total Sales by Order Status for current and previous two orders 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    OrderStatus,
+    Sales,
+    SUM(Sales) OVER (
+        PARTITION BY OrderStatus 
+        ORDER BY OrderDate 
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) AS Total_Sales
+FROM Sales.Orders;
+
+-- 7. Calculate Total Sales by Order Status from previous two orders only 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    OrderStatus,
+    Sales,
+    SUM(Sales) OVER (
+        PARTITION BY OrderStatus 
+        ORDER BY OrderDate 
+        ROWS 2 PRECEDING
+    ) AS Total_Sales
+FROM Sales.Orders;
+ 
+-- 8.Calculate cumulative Total Sales by Order Status up to the current order 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    OrderStatus,
+    Sales,
+    SUM(Sales) OVER (
+        PARTITION BY OrderStatus 
+        ORDER BY OrderDate 
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS Total_Sales
+FROM Sales.Orders;
+
+-- 9.Calculate cumulative Total Sales by Order Status from the start to the current row 
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    OrderStatus,
+    Sales,
+    SUM(Sales) OVER (
+        PARTITION BY OrderStatus 
+        ORDER BY OrderDate 
+        ROWS UNBOUNDED PRECEDING
+    ) AS Total_Sales
+FROM Sales.Orders;
+/*=========================================================================================================================*/
+-- *** Rules ***
+-- nesting is not allowed
+-- windows can be used only in select and order by
+-- sql executes window after filtering data using where
