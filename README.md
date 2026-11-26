@@ -9,6 +9,8 @@ Queries were typed and practised by me, with my own notes and variations.
 ## Topics Covered
 - Null Function
 - Case statements
+- Aggregate functions
+- Windows syntax over, partition by and frame
 
 ## Tools Used
 - SQL Server Management Studio (T-SQL)
