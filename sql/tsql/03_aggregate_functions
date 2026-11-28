@@ -27,4 +27,15 @@ sum(sales) total_sales
 from sales.orders
 group by productid;
 -- The numbeer of rows in the output is defined by the dimension (productid)
+-- 4. moving average and rolling average 
+select
+orderid,
+productid,
+orderdate,
+sales,
+avg(sales)over(partition by productid) normal_average,
+avg(sales)over(partition by productid order by orderdate)moving_average,
+avg(sales)over(partition by productid order by orderdate rows between current row and 1 following) rolling_average
+from sales.orders;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
